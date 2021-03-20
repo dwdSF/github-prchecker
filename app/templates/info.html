@@ -1,0 +1,110 @@
+{% extends 'layout.html' %}
+
+{% block styles %}
+<style>
+    .text-red{
+        color: tomato !important;
+    }
+    .center{
+        text-align: center;
+    }
+    .info-content{
+        display: flex;
+        flex-wrap: wrap;
+        text-align: center;
+        
+    }
+    .info-content ul{
+        margin-bottom: 5%;
+        margin-right: 1%;
+    }
+</style>
+{% endblock styles %}
+
+{% block content %}
+<div class="container">
+    <div class="row pt-5">
+        <div class="col-6 offset-3">
+            
+            <form id="formInfo" action="{% url 'info'  %}" method="POST" autocomplete="off">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group validate">
+                            <label for="username">Username</label>
+                            <textarea rows="1" name="username" class="form-control" placeholder="Enter username"></textarea>
+                            <small class="text-red text-muted mySpan"></small>
+                        </div>
+                    <div class="col-6 center">
+                        <button type="submit" class="btn btn-primary pl-5 pr-5 btnSave">Send</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="info-content mt-5" data-url="{% url 'info_data' %}">
+
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+
+    function getUserInfo(data){
+        $.ajax({
+            url: $(".info-content").data('url'),
+            type: "GET",
+            data: data,
+            success: function(resp){
+                $(".info-content").html(resp);
+            },
+            error: function(resp){
+                console.log("something went wrong");
+            }
+        });
+    }
+
+    $("#formInfo").on("submit", function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var $this = $(this);
+        var valid = true;
+        $('#formInfo textarea').each(function() {
+            let $this = $(this);
+            
+            if(!$this.val()) {
+                valid = false;
+                $this.parents('.validate').find('.mySpan').text('The '+$this.attr('name').replace(/[\_]+/g, ' ')+' field is required');
+            }
+        });
+    
+        if(valid){
+            $(".btnSave").text('Sending....').attr('disabled',true);
+            let data = $this.serialize();
+            //ajax
+            $.ajax({
+                url: $this.attr('action'),
+                type: "POST",
+                data: data,
+                dataType: 'json',
+                success: function(resp){
+                    if(resp.message === 'success'){
+                        getUserInfo(data);
+                    }else{
+                        alert(resp.message);
+                    }
+
+                    $(".btnSave").text('Send').attr('disabled',false);
+                },
+                error: function(resp){
+                    console.log('something went wrong');
+                    $(".btnSave").text('Send').attr('disabled',false);
+                }
+            });
+        }
+        return false;
+    });
+
+</script>
+{% endblock scripts %}

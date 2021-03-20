@@ -1,0 +1,31 @@
+{% load prs_normalize %}
+<style>
+    .list-group-item.attr:nth-child(n+4){
+        display: none;
+        list-style: none;
+    }
+</style>
+{% for pr in user_prs %}
+    <ul class="list-group hidden-attributes">
+        <li class="list-group-item attr">Project Name: {{ pr.project_name }} </li>
+        <li class="list-group-item attr">GitHub Stars: {{ pr.stars_number }}</li>
+        <li class="list-group-item attr">Project URL: <a href="{{ pr.url }}">тык</a> </li>
+        <li class="list-group-item attr"><b>Merged Pull Requests: </b> {{ pr.merged_prs|prs_normalize }} </li>
+        <li class="list-group-item attr"><b>Not Merged Pull Requests: </b> {{ pr.not_merged_prs|prs_normalize }}</li>
+        <li class="list-group-item text-center">
+        <a href="#" class="show-attributes">
+            <span class="control">Pull requests information..</span>
+        </a>
+    </ul>
+    <hr>
+{% endfor %}
+<script>
+    jQuery(function ($) {
+    $('.hidden-attributes').on('click', '.show-attributes', function(e) {
+        $('.control', $(e.delegateTarget)).toggleClass('hidden');
+        $('.attr:nth-child(n+4)', $(e.delegateTarget)).fadeToggle();
+        
+        e.preventDefault();
+        });
+    });
+</script>
