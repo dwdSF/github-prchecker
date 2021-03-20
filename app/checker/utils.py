@@ -56,7 +56,7 @@ def get_user_prs(merged_prs, username):
     try:
         pr = response.json().get('data').get('user'
                                              ).get('pullRequests').get('nodes')
-    except (json.JSONDecodeError, TypeError):
+    except (json.JSONDecodeError, TypeError, AttributeError):
         logging.error('Невозможно декодировать JSON.')
 
     user_prs = add_not_merged_prs(pr, merged_prs)
@@ -79,7 +79,7 @@ def get_merged_prs(username):
 
     try:
         merged_prs = response.json().get('data').get('user').get('pullRequests').get('nodes')  # noqa
-    except (json.JSONDecodeError, TypeError):
+    except (json.JSONDecodeError, TypeError, AttributeError):
         logging.error('Невозможно декодировать JSON.')
 
     transformed_prs = transform_prs(merged_prs)
