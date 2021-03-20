@@ -9,7 +9,8 @@ from .utils import collect_user_info
 
 
 class InfoView(View):
-    ''' Comment here '''
+    ''' The class implements post request processing using AJAX.
+        Calls the information collection function. '''
 
     def get(self, request, *args, **kwargs):
         return render(request, "info.html", {})
@@ -28,6 +29,8 @@ class InfoView(View):
 
 
 class InfoDataView(View):
+    ''' Uploading the received information to the page '''
+
     def get(self, request, *args, **kwargs):
         username = request.GET['username']
         template = loader.get_template("data.html")

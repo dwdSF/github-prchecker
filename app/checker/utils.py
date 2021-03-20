@@ -88,6 +88,8 @@ def get_merged_prs(username):
 
 
 def collect_user_info(username):
+    ''' Collecting information using the Github API '''
+
     if Check.objects.filter(username=username).exists():
         return None
 

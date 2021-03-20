@@ -6,7 +6,7 @@ User = get_user_model()
 
 
 class Check(models.Model):
-    ''' Comment here '''
+    ''' Model for saving data about pull requests '''
 
     project_name = models.CharField(max_length=150)
     stars_number = models.IntegerField()
