@@ -13,6 +13,8 @@ headers = {'Authorization': 'token {}'.format(API_TOKEN)}
 
 
 def transform_prs(merged_prs: dict) -> dict:
+    ''' Adding not merged prs data to dict '''
+
     uniq_prs = {}
     for pr in merged_prs:
         proj_name = pr.get('repository').get('name')
@@ -31,6 +33,8 @@ def transform_prs(merged_prs: dict) -> dict:
 
 
 def add_not_merged_prs(prs: dict, merged_prs: dict) -> dict:
+    ''' Creates a dict with merged pull requests data '''
+
     for pr in prs:
         proj_name = pr.get('repository').get('name')
         pr_info = (pr.get('url'), pr.get('comments').get('totalCount'))
@@ -42,6 +46,8 @@ def add_not_merged_prs(prs: dict, merged_prs: dict) -> dict:
 
 
 def get_user_prs(merged_prs: dict, username: str) -> dict:
+    ''' Collecting not merged pull requests '''
+
     jsona = {'query': '''{user(login: "%s") {pullRequests(first: 100, states: [OPEN, CLOSED]) {
                         nodes {url comments {totalCount}
                         repository {name url stargazerCount}}}}}''' % username}
@@ -69,6 +75,8 @@ def get_user_prs(merged_prs: dict, username: str) -> dict:
 
 
 def get_merged_prs(username: str) -> Union[dict, None]:
+    ''' Collecting merged pull requests '''
+
     jsona = {'query': '''{user(login: "%s") {pullRequests(first: 100, states: [MERGED]) {
                         nodes {url comments {totalCount}
                         repository {name url stargazerCount}}}}}''' % username}

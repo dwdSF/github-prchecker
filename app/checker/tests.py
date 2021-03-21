@@ -2,9 +2,10 @@
 #  тут могли бы быть тесты, но я очень устал
 #  Update: передохнул, напишем немного тестов
 '''
-from .models import Check
 from django.test import Client, TestCase
 from django.urls import reverse
+
+from .models import Check
 
 
 class TestCheck(TestCase):
