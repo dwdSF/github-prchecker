@@ -48,12 +48,12 @@ def add_not_merged_prs(prs: dict, merged_prs: dict) -> dict:
 def get_user_prs(merged_prs: dict, username: str) -> dict:
     ''' Collecting not merged pull requests '''
 
-    jsona = {'query': '''{user(login: "%s") {pullRequests(first: 100, states: [OPEN, CLOSED]) {
+    json_data = {'query': '''{user(login: "%s") {pullRequests(first: 100, states: [OPEN, CLOSED]) {
                         nodes {url comments {totalCount}
                         repository {name url stargazerCount}}}}}''' % username}
 
     try:
-        response = requests.post(url=url, json=jsona, headers=headers)
+        response = requests.post(url=url, json=json_data, headers=headers)
         response.raise_for_status()
     except requests.exceptions.ConnectionError:
         logging.error('Ошибка соединения.')
@@ -77,12 +77,12 @@ def get_user_prs(merged_prs: dict, username: str) -> dict:
 def get_merged_prs(username: str) -> Union[dict, None]:
     ''' Collecting merged pull requests '''
 
-    jsona = {'query': '''{user(login: "%s") {pullRequests(first: 100, states: [MERGED]) {
+    json_data = {'query': '''{user(login: "%s") {pullRequests(first: 100, states: [MERGED]) {
                         nodes {url comments {totalCount}
                         repository {name url stargazerCount}}}}}''' % username}
 
     try:
-        response = requests.post(url=url, json=jsona, headers=headers)
+        response = requests.post(url=url, json=json_data, headers=headers)
         response.raise_for_status()
     except requests.exceptions.ConnectionError:
         logging.error('Ошибка соединения.')
