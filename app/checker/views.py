@@ -33,10 +33,10 @@ class InfoDataView(View):
 
     def get(self, request, *args, **kwargs):
         username = request.GET['username']
-        template = loader.get_template("data.html")
+        template = loader.get_template('data.html')
 
         user_prs = Check.objects.filter(username=username)
         context = {
-            "user_prs": user_prs
+            'user_prs': user_prs
         }
         return HttpResponse(template.render(context, self.request))
