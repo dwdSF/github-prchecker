@@ -129,3 +129,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # Redis and Celery Conf
+
+# API
+API_URL = 'https://api.github.com/graphql'
+API_TOKEN = os.environ.get('API_TOKEN')

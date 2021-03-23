@@ -1,15 +1,11 @@
 import json
 import logging
-import os
+from django.conf import settings
 from typing import Union
 
 import requests
 
-from .models import Check
-
-url = 'https://api.github.com/graphql'
-API_TOKEN = os.environ.get('API_TOKEN')
-headers = {'Authorization': 'token {}'.format(API_TOKEN)}
+from .models import GithubProject
 
 
 def transform_prs(merged_prs: dict) -> dict:
@@ -48,12 +44,14 @@ def add_not_merged_prs(prs: dict, merged_prs: dict) -> dict:
 def get_user_prs(merged_prs: dict, username: str) -> dict:
     ''' Collecting not merged pull requests '''
 
+    headers = {'Authorization': 'token {}'.format(settings.API_TOKEN)}
     json_data = {'query': '''{user(login: "%s") {pullRequests(first: 100, states: [OPEN, CLOSED]) {
                         nodes {url comments {totalCount}
                         repository {name url stargazerCount}}}}}''' % username}
 
     try:
-        response = requests.post(url=url, json=json_data, headers=headers)
+        response = requests.post(url=settings.API_URL, json=json_data,
+                                 headers=headers)
         response.raise_for_status()
     except requests.exceptions.ConnectionError:
         logging.error('Ошибка соединения.')
@@ -77,12 +75,14 @@ def get_user_prs(merged_prs: dict, username: str) -> dict:
 def get_merged_prs(username: str) -> Union[dict, None]:
     ''' Collecting merged pull requests '''
 
+    headers = {'Authorization': 'token {}'.format(settings.API_TOKEN)}
     json_data = {'query': '''{user(login: "%s") {pullRequests(first: 100, states: [MERGED]) {
                         nodes {url comments {totalCount}
                         repository {name url stargazerCount}}}}}''' % username}
 
     try:
-        response = requests.post(url=url, json=json_data, headers=headers)
+        response = requests.post(url=settings.API_URL, json=json_data,
+                                 headers=headers)
         response.raise_for_status()
     except requests.exceptions.ConnectionError:
         logging.error('Ошибка соединения.')
@@ -105,7 +105,7 @@ def get_merged_prs(username: str) -> Union[dict, None]:
 def collect_user_info(username: str) -> None:
     ''' Collecting information using the Github API '''
 
-    if Check.objects.filter(username=username).exists():
+    if GithubProject.objects.filter(username=username).exists():
         return None
 
     merged_prs: dict = get_merged_prs(username)
@@ -115,7 +115,7 @@ def collect_user_info(username: str) -> None:
     user_prs: dict = get_user_prs(merged_prs, username)
 
     for pr in user_prs.values():
-        Check.objects.create(
+        GithubProject.objects.create(
             project_name=pr['name'],
             url=pr['url'],
             stars_number=pr['stars'],
